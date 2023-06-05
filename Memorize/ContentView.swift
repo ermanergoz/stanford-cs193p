@@ -8,26 +8,56 @@
 import SwiftUI
 
 struct ContentView: View {
-    var emojis: Array<String> = ["✈️", "🚀", "🚁", "🚝", "🚝"]
+    var emojis = ["🚲", "🚂", "🚁", "🚜", "🚕", "🏎️", "🚑", "🚓", "🚒", "✈️", "🚀", "⛵️", "🛸", "🛶", "🚌", "🏍️", "🛺", "🚠", "🛵", "🚗", "🚚", "🚇", "🛻", "🚝"]
+    
+    @State var emojiCount = 4
     
     var body: some View {
-        HStack {
-            /*id is the emoji itself at the moment. When the train is tapped, 2 of them gets marked*/
-            ForEach(emojis, id: \.self, content: { emoji in
-                CardView(content: emoji)
-            })
-            //for index in emojis.count {
-            //    CardView(content: emojis[index])
-            //}
+        VStack {
+            ScrollView {
+                //GridItem let us control the columns more. 3 GridItems gives us 3 columns
+                LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
+                    ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
+                        CardView(content: emoji).aspectRatio(2/3, contentMode: ContentMode.fit)
+                    }
+                }
+            }
+            .foregroundColor(.red)
+            Spacer()
+            HStack {
+                remove
+                Spacer()
+                add
+            }
+            .font(.largeTitle)
+            .padding(.horizontal)
         }
         .padding(.horizontal)
-        .foregroundColor(.red)
+    }
+    
+    var add : some View {
+        Button(action: {
+            if emojiCount < emojis.count {
+                emojiCount += 1
+            }
+        }, label: {
+            Image(systemName: "plus.circle") //We are using SF Symbols
+        })
+    }
+    
+    var remove: some View {
+        return Button(action: {
+            if emojiCount > 1 {
+                emojiCount -= 1
+            }
+        }, label: {
+            Image(systemName: "minus.circle")
+        })
     }
 }
 
 struct CardView: View {
-    /*@State turns it into a pointer that points to some boolean in the memory*/
-    @State var isFaceUp: Bool = true //{ return false}
+    @State var isFaceUp: Bool = true
     var content: String
     
     var body: some View {
