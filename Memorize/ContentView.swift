@@ -8,41 +8,49 @@
 import SwiftUI
 
 struct ContentView: View {
-    /*
-     var body: some /*we are telling the compiler that the type is some View, figure out what it actually is. In this case, it is a Text so it will be replaced with Text. It is called opaque type*/ View { //not stored in the memory. The value of body is being calculated by this function
-     /*there is a hidden return here*/
-     Text("Hello, world!")
-     .foregroundColor(Color.blue)
-     .padding([.leading, .bottom, .trailing], 8.0) //This function exists for all structs that behave like a view. When we use this function, it no longer returns Text object but it returns ModifiedContent something something
-     RoundedRectangle(cornerRadius: 25).stroke(lineWidth: 3).foregroundColor(Color.red).padding(20)
-     
-     }
-     */
-    /*
+    var emojis: Array<String> = ["✈️", "🚀", "🚁", "🚝", "🚝"]
+    
     var body: some View {
-        return ZStack(alignment: .center, content: {
-            Text("Hello, world!")
-                .foregroundColor(Color.blue)
-                .padding([.leading, .bottom, .trailing], 8.0)
-            
-            RoundedRectangle(cornerRadius: 25).stroke(lineWidth: 3).foregroundColor(Color.red).padding(8)
-        }).padding(16)
-    }
-     */
-    var body: some View {
-        ZStack(alignment: .center) {
-            Text("Hello, world!")
-                .padding([.leading, .bottom, .trailing], 8.0)
-            
-            RoundedRectangle(cornerRadius: 25).stroke(lineWidth: 3).padding(8)
+        HStack {
+            /*id is the emoji itself at the moment. When the train is tapped, 2 of them gets marked*/
+            ForEach(emojis, id: \.self, content: { emoji in
+                CardView(content: emoji)
+            })
+            //for index in emojis.count {
+            //    CardView(content: emojis[index])
+            //}
         }
-        .padding(16)
-        .foregroundColor(Color.red)
+        .padding(.horizontal)
+        .foregroundColor(.red)
+    }
+}
+
+struct CardView: View {
+    /*@State turns it into a pointer that points to some boolean in the memory*/
+    @State var isFaceUp: Bool = true //{ return false}
+    var content: String
+    
+    var body: some View {
+        ZStack {
+            let shape = RoundedRectangle(cornerRadius: 20)
+            if isFaceUp {
+                shape.fill().foregroundColor(.white)
+                shape.stroke(lineWidth: 3)
+                Text(content).font(.largeTitle)
+            } else {
+                shape.fill()
+            }
+        }.onTapGesture {
+            isFaceUp = !isFaceUp
+        }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .preferredColorScheme(.dark)
+        ContentView()
+            .preferredColorScheme(.light)
     }
 }
