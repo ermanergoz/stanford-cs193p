@@ -10,13 +10,13 @@ import SwiftUI
 struct ContentView: View {
     var emojis = ["🚲", "🚂", "🚁", "🚜", "🚕", "🏎️", "🚑", "🚓", "🚒", "✈️", "🚀", "⛵️", "🛸", "🛶", "🚌", "🏍️", "🛺", "🚠", "🛵", "🚗", "🚚", "🚇", "🛻", "🚝"]
     
-    @State var emojiCount = 4
+    @State var emojiCount = 20
     
     var body: some View {
         VStack {
             ScrollView {
-                //GridItem let us control the columns more. 3 GridItems gives us 3 columns
-                LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
+                //We can set some priperties if GridItem also
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
                     ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
                         CardView(content: emoji).aspectRatio(2/3, contentMode: ContentMode.fit)
                     }
@@ -41,7 +41,7 @@ struct ContentView: View {
                 emojiCount += 1
             }
         }, label: {
-            Image(systemName: "plus.circle") //We are using SF Symbols
+            Image(systemName: "plus.circle")
         })
     }
     
