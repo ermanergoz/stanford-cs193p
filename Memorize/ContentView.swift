@@ -8,16 +8,24 @@
 import SwiftUI
 
 struct ContentView: View {
-    var emojis = ["🚲", "🚂", "🚁", "🚜", "🚕", "🏎️", "🚑", "🚓", "🚒", "✈️", "🚀", "⛵️", "🛸", "🛶", "🚌", "🏍️", "🛺", "🚠", "🛵", "🚗", "🚚", "🚇", "🛻", "🚝"]
+    var vehicleEmojis = ["🚲", "🚂", "🚁", "🚜", "🚕", "🏎️", "🚑", "🚓", "🚒", "✈️", "🚀", "⛵️", "🛸", "🛶", "🚌", "🏍️", "🛺", "🚠", "🛵", "🚗", "🚚", "🚇", "🛻", "🚝"]
+    var animalEmojis = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼"]
+    var foodEmojis = ["🍔", "🥐", "🍕", "🥗", "🥟", "🍣", "🍪", "🍚",
+                      "🍝", "🥙", "🍭", "🍤", "🥞", "🍦", "🍛", "🍗"]
     
-    @State var emojiCount = 20
+    @State var emojis: [String]
+    
+    init() {
+        //The @State property wrapper automatically generates a property with a leading underscore for us
+        _emojis = State(initialValue: vehicleEmojis)
+    }
     
     var body: some View {
         VStack {
+            Text("Memorize!").font(.largeTitle).bold().padding()
             ScrollView {
-                //We can set some priperties if GridItem also
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-                    ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
+                    ForEach(emojis[0..<emojis.count], id: \.self) { emoji in
                         CardView(content: emoji).aspectRatio(2/3, contentMode: ContentMode.fit)
                     }
                 }
@@ -25,33 +33,48 @@ struct ContentView: View {
             .foregroundColor(.red)
             Spacer()
             HStack {
-                remove
+                theme1
                 Spacer()
-                add
+                theme2
+                Spacer()
+                theme3
             }
-            .font(.largeTitle)
             .padding(.horizontal)
         }
+        .navigationTitle("Memorize!")
         .padding(.horizontal)
     }
     
-    var add : some View {
+    var theme1 : some View {
         Button(action: {
-            if emojiCount < emojis.count {
-                emojiCount += 1
-            }
+            emojis = vehicleEmojis.shuffled()
         }, label: {
-            Image(systemName: "plus.circle")
+            VStack {
+                Image(systemName: "car.circle").font(.largeTitle)
+                Text("Vehicle")
+            }
         })
     }
     
-    var remove: some View {
+    var theme2: some View {
         return Button(action: {
-            if emojiCount > 1 {
-                emojiCount -= 1
-            }
+            emojis = animalEmojis.shuffled()
         }, label: {
-            Image(systemName: "minus.circle")
+            VStack {
+                Image(systemName: "fish.circle").font(.largeTitle)
+                Text("Animal")
+            }
+        })
+    }
+    
+    var theme3: some View {
+        return Button(action: {
+            emojis = foodEmojis.shuffled()
+        }, label: {
+            VStack {
+                Image(systemName: "fork.knife.circle").font(.largeTitle)
+                Text("Food")
+            }
         })
     }
 }
