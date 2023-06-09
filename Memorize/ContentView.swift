@@ -89,7 +89,7 @@ struct CardView: View {
             if isFaceUp {
                 shape.fill().foregroundColor(.white)
                 shape.stroke(lineWidth: 3)
-                Text(content).font(.largeTitle)
+                Text(content).font(.largeTitle) //It is actually a type variable. Font.largetitle. We don't need to type Font because of type inference
             } else {
                 shape.fill()
             }

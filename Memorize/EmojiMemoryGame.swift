@@ -7,18 +7,20 @@
 
 import SwiftUI //This is a View Model so it is a part of the UI
 
-//func makeCardContent(index: Int) -> String {
-//    return "🥲"
-//}
-
 class EmojiMemoryGame {
-    //private var model: MemoryGame<String> /*We have emojis and they are strings. Here we are telling what is the type of CardContent*/ = MemoryGame<String>(numberOfPairsOfCards: 4, createContent: { index in
-    //    /*return*/ "😂" //We could also pass a function by typing makeCardContent that is declared above
-    //})
+    //The order of the properties that are being initialized is random. We don't know which one gets initialized first. Thats why we might get "property initializers run before 'self' is available"
+    static let emojis = ["🚲", "🚂", "🚁", "🚜", "🚕", "🏎️", "🚑", "🚓", "🚒", "✈️", "🚀", "⛵️", "🛸", "🛶", "🚌", "🏍️", "🛺", "🚠", "🛵", "🚗", "🚚", "🚇", "🛻", "🚝"] //This is a type variable
     
-    private var model: MemoryGame<String> = MemoryGame<String>(numberOfPairsOfCards: 4) { pairIndex in "😂" } //this is a much cleaner way
+    static func createMemoryGame() -> MemoryGame<String> {
+        MemoryGame<String>(numberOfPairsOfCards: 4) { pairIndex in
+            emojis[pairIndex]
+        }
+    } //This is a type function
+    
+    private var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
     
     var cards: Array<MemoryGame<String>.Card> {
         return model.cards
     }
 }
+ 

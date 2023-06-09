@@ -6,6 +6,7 @@
 //
 
 import Foundation
+//This is our model
 
 /*CardContent is a Generic. It is a "do not care type"*/
 struct MemoryGame<CardContent> {
