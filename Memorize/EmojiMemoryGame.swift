@@ -7,8 +7,7 @@
 
 import SwiftUI // This is a View Model so it is a part of the UI
 
-class EmojiMemoryGame: ObservableObject
-{
+class EmojiMemoryGame: ObservableObject {
     static let emojis = ["🚲", "🚂", "🚁", "🚜", "🚕", "🏎️", "🚑", "🚓", "🚒", "✈️", "🚀", "⛵️", "🛸", "🛶", "🚌", "🏍️", "🛺", "🚠", "🛵", "🚗", "🚚", "🚇", "🛻", "🚝"]
 
     static func createMemoryGame() -> MemoryGame<String> {
