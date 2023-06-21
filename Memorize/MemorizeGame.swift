@@ -11,22 +11,28 @@ import Foundation
 struct MemoryGame<CardContent> {
     private(set) var cards: [Card]
     
+    private var indexOfTheOneAndOnlyFaceUpCard: Int?
+    
     mutating func choose(_ card: Card) {
-        //if let chosenIndex = index(of: card) {    // Not needed anymore
-        if let chosenIndex = cards.firstIndex(where: { aCardInTheCardsArray in aCardInTheCardsArray.id == card.id }) {
+        //if let chosenIndex = cards.firstIndex(where: { aCardInTheCardsArray in aCardInTheCardsArray.id == card.id }) {
+        if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }) {    // Same thing as above but better to look at
+            if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard {
+                if cards[chosenIndex].content == cards[potentialMatchIndex].content {
+                    cards[chosenIndex].isMatched = true
+                    cards[potentialMatchIndex].isMatched = true
+                }
+                indexOfTheOneAndOnlyFaceUpCard = nil
+            } else {
+                //for index in 0..<cards.count {
+                for index in cards.indices {    // Same thing as above but better to look at
+                    cards[index].isFaceUp = false
+                }
+                indexOfTheOneAndOnlyFaceUpCard = chosenIndex
+            }
             cards[chosenIndex].isFaceUp.toggle()
         }
         print("\(cards)")
     }
-    
-    //func index(of card: Card) -> Int? {   // Not needed anymore
-    //    for index in 0 ..< cards.count {
-    //        if cards[index].id == card.id {
-    //            return index
-    //        }
-    //    }
-    //    return nil
-    //}
     
     init(numberOfPairsOfCards: Int, createContent: (Int) -> CardContent) {
         cards = [Card]()
@@ -39,7 +45,7 @@ struct MemoryGame<CardContent> {
     }
     
     struct Card: Identifiable {
-        var isFaceUp: Bool = true
+        var isFaceUp: Bool = false
         var isMatched: Bool = false
         var content: CardContent
         var id: Int
