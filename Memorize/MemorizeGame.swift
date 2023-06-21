@@ -8,30 +8,28 @@
 import Foundation
 // This is our model
 
-/* CardContent is a Generic. It is a "do not care type" */
 struct MemoryGame<CardContent> {
-    private(set /* other classes can look at the model but cant change it */ ) var cards: [Card]
+    private(set) var cards: [Card]
     
     mutating func choose(_ card: Card) {
-        if let chosenIndex = index(of: card) {
-            cards[chosenIndex].isFaceUp.toggle() // toggle() is like isFaceUp = !isFaceUp
-            //if chosenIndex is not nil
+        //if let chosenIndex = index(of: card) {    // Not needed anymore
+        if let chosenIndex = cards.firstIndex(where: { aCardInTheCardsArray in aCardInTheCardsArray.id == card.id }) {
+            cards[chosenIndex].isFaceUp.toggle()
         }
         print("\(cards)")
     }
     
-    func index(of card: Card) -> Int? {
-        for index in 0 ..< cards.count {
-            if cards[index].id == card.id {
-                return index
-            }
-        }
-        return nil
-    }
+    //func index(of card: Card) -> Int? {   // Not needed anymore
+    //    for index in 0 ..< cards.count {
+    //        if cards[index].id == card.id {
+    //            return index
+    //        }
+    //    }
+    //    return nil
+    //}
     
     init(numberOfPairsOfCards: Int, createContent: (Int) -> CardContent) {
         cards = [Card]()
-        // Add numbersOfPairsOfCards x 2 cards to cards array
         
         for pairIndex in 0 ..< numberOfPairsOfCards {
             let content = createContent(pairIndex)
