@@ -15,7 +15,7 @@ struct ContentView: View {
             HStack {
                 Text(viewModel.theme.name).font(.largeTitle)
                 Spacer()
-                Text("Score:")
+                Text("Score: \(viewModel.score)")
             }.padding()
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {

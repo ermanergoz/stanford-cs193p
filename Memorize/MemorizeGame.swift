@@ -12,16 +12,20 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     private(set) var cards: [Card]
 
     private var indexOfTheOneAndOnlyFaceUpCard: Int?
+    var score: Int = 0
 
     mutating func choose(_ card: Card) {
-        if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }), /* We cant use && in if statement if we have let but we can use , It is same as the && but it will do if let */
+        if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }),
            !cards[chosenIndex].isFaceUp,
            !cards[chosenIndex].isMatched
         {
             if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard {
-                if cards[chosenIndex].content == cards[potentialMatchIndex].content { // We are Binary operator '==' cannot be applied to two 'CardContent' operands error because CardContent is a don't care type. To fiz that, we added where CardContent: Equatable so they can be compared
+                if cards[chosenIndex].content == cards[potentialMatchIndex].content {
                     cards[chosenIndex].isMatched = true
                     cards[potentialMatchIndex].isMatched = true
+                    score += 2
+                } else {
+                    score -= 1
                 }
                 indexOfTheOneAndOnlyFaceUpCard = nil
             } else {
@@ -31,6 +35,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                 indexOfTheOneAndOnlyFaceUpCard = chosenIndex
             }
             cards[chosenIndex].isFaceUp.toggle()
+            cards[chosenIndex].isSeen = true
         }
         print("\(cards)")
     }
@@ -49,6 +54,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         var isFaceUp: Bool = false
         var isMatched: Bool = false
         var content: CardContent
+        var isSeen: Bool = false
         var id: Int
     }
 }
