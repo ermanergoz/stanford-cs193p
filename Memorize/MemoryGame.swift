@@ -11,33 +11,22 @@ import Foundation
 struct MemoryGame<CardContent> where CardContent: Equatable {
     private(set) var cards: [Card]
 
-    private var indexOfTheOneAndOnlyFaceUpCard: Int? { //This is called the computed property
-        get {
-            let faceUpCardIndices = cards.indices.filter({
-                /*index in*/ cards[/*index*/$0].isFaceUp
-            }) //Returns an array
-            /*
-            //var faceUpCardIndices = [Int]()
-            for index in cards.indices {
-                if cards[index].isFaceUp {
-                    faceUpCardIndices.append(index)
-                }
-            }
-             */
-            if faceUpCardIndices.count == 1 {
-                return faceUpCardIndices.first
-            } else {
-                return nil
-            }
-        }
+    private var indexOfTheOneAndOnlyFaceUpCard: Int? {
+        get { return cards.indices.filter({cards[$0].isFaceUp}).oneAndOnly }
         set {
+            cards.indices.forEach {cards[$0].isFaceUp = ($0 == newValue)} //Same thing as below
+            /*
             for index in cards.indices {
+                /*
                 if index != newValue {
                     cards[index].isFaceUp = false
                 } else {
                     cards[index].isFaceUp = true
                 }
+                 */
+                cards[index].isFaceUp = (index == newValue) //Same thing as above
             }
+            */
         }
     }
 
@@ -73,5 +62,15 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         var isMatched = false
         var content: CardContent
         var id: Int
+    }
+}
+
+extension Array {
+    var oneAndOnly: Element?/*A "don't care type"*/ { //It itself a computed var
+        if self.count == 1 {
+            return self.first
+        } else {
+            return nil
+        }
     }
 }
