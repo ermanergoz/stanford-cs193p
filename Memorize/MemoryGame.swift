@@ -13,12 +13,17 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
 
     private var indexOfTheOneAndOnlyFaceUpCard: Int? { //This is called the computed property
         get {
-            var faceUpCardIndices = [Int]()
+            let faceUpCardIndices = cards.indices.filter({
+                /*index in*/ cards[/*index*/$0].isFaceUp
+            }) //Returns an array
+            /*
+            //var faceUpCardIndices = [Int]()
             for index in cards.indices {
                 if cards[index].isFaceUp {
                     faceUpCardIndices.append(index)
                 }
             }
+             */
             if faceUpCardIndices.count == 1 {
                 return faceUpCardIndices.first
             } else {
