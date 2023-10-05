@@ -12,9 +12,9 @@ struct EmojiMemoryGameView: View {
 
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))]) {
                 ForEach(game.cards) { card in
-                    CardView(card: card) //With the init we added just below with _ as an external name, we can just write card instead of card: card. But we won't do that
+                    CardView(card: card)
                         .aspectRatio(2 / 3, contentMode: ContentMode.fit)
                         .onTapGesture {
                             game.choose(card)
@@ -28,25 +28,33 @@ struct EmojiMemoryGameView: View {
 }
 
 struct CardView: View {
-    /*private*/ let card: EmojiMemoryGame.Card //With the init we added just below, we can make it private
-    /*
-    init(_/*external name*/ card: EmojiMemoryGame.Card) {
-        self.card = card
-    }
-*/
+    let card: EmojiMemoryGame.Card
+    
     var body: some View {
-        ZStack {
-            let shape = RoundedRectangle(cornerRadius: 20)
-            if card.isFaceUp {
-                shape.fill().foregroundColor(.white)
-                shape.stroke(lineWidth: 3)
-                Text(card.content).font(.largeTitle)
-            } else if card.isMatched {
-                shape.opacity(0)
-            } else {
-                shape.fill()
+        GeometryReader { geometry in    //We used GeometryReader to resize the emojis automatically when we change the minimum value on the line 15
+            ZStack {
+                let shape = RoundedRectangle(cornerRadius: DrawingConstatns.cornerRadius)
+                if card.isFaceUp {
+                    shape.fill().foregroundColor(.white)
+                    shape.stroke(lineWidth: DrawingConstatns.lineWidth)
+                    Text(card.content).font(font(in: geometry.size))
+                } else if card.isMatched {
+                    shape.opacity(0)
+                } else {
+                    shape.fill()
+                }
             }
         }
+    }
+    
+    private func font(in size: CGSize) -> Font {
+        Font.system(size: min(size.width, size.height * DrawingConstatns.fontScale))
+    }
+    
+    private struct DrawingConstatns {
+        static let cornerRadius: CGFloat = 20
+        static let lineWidth: CGFloat = 3
+        static let fontScale: CGFloat = 0.8
     }
 }
 
