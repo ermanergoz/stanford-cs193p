@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct EmojiMemoryGameView: View {
-    @ObservedObject var game: EmojiMemoryGame //view model
+    @ObservedObject var game: EmojiMemoryGame // view model
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))]) {
-                ForEach(game.cards) { card in
-                    CardView(card: card)
-                        .aspectRatio(2 / 3, contentMode: ContentMode.fit)
-                        .onTapGesture {
-                            game.choose(card)
-                        }
-                }
+        AspectVGrid(items: game.cards, aspectRatio: 2 / 3) { card in
+            if card.isMatched, !card.isFaceUp {
+                Rectangle().opacity(0)
+            } else {
+                CardView(card: card)
+                    .padding(4)
+                    .onTapGesture {
+                        game.choose(card)
+                    }
             }
         }
         .foregroundColor(.red)
@@ -29,14 +29,16 @@ struct EmojiMemoryGameView: View {
 
 struct CardView: View {
     let card: EmojiMemoryGame.Card
-    
+
     var body: some View {
-        GeometryReader { geometry in    //We used GeometryReader to resize the emojis automatically when we change the minimum value on the line 15
+        GeometryReader { geometry in // We used GeometryReader to resize the emojis automatically when we change the minimum value on the line 15
             ZStack {
                 let shape = RoundedRectangle(cornerRadius: DrawingConstatns.cornerRadius)
                 if card.isFaceUp {
                     shape.fill().foregroundColor(.white)
-                    shape.stroke(lineWidth: DrawingConstatns.lineWidth)
+                    shape.strokeBorder(lineWidth: DrawingConstatns.lineWidth)
+                    Pie(startAngle: Angle(degrees: 0-90), endAngle: Angle(degrees: 110-90))
+                        .padding(5).opacity(0.5)
                     Text(card.content).font(font(in: geometry.size))
                 } else if card.isMatched {
                     shape.opacity(0)
@@ -46,15 +48,15 @@ struct CardView: View {
             }
         }
     }
-    
+
     private func font(in size: CGSize) -> Font {
         Font.system(size: min(size.width, size.height * DrawingConstatns.fontScale))
     }
-    
-    private struct DrawingConstatns {
-        static let cornerRadius: CGFloat = 20
+
+    private enum DrawingConstatns {
+        static let cornerRadius: CGFloat = 10
         static let lineWidth: CGFloat = 3
-        static let fontScale: CGFloat = 0.8
+        static let fontScale: CGFloat = 0.7
     }
 }
 

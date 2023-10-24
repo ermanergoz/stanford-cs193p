@@ -8,11 +8,11 @@
 import SwiftUI // This is a View Model so it is a part of the UI
 
 class EmojiMemoryGame: ObservableObject {
-    typealias Card = MemoryGame<String>.Card //With this change, the full name of it is EmojiMemoryGame.Card and it is available outside of this class
+    typealias Card = MemoryGame<String>.Card // With this change, the full name of it is EmojiMemoryGame.Card and it is available outside of this class
     private static let emojis = ["🚲", "🚂", "🚁", "🚜", "🚕", "🏎️", "🚑", "🚓", "🚒", "✈️", "🚀", "⛵️", "🛸", "🛶", "🚌", "🏍️", "🛺", "🚠", "🛵", "🚗", "🚚", "🚇", "🛻", "🚝"]
 
     private static func createMemoryGame() -> MemoryGame<String> {
-        MemoryGame<String>(numberOfPairsOfCards: 4) { pairIndex in
+        MemoryGame<String>(numberOfPairsOfCards: 10) { pairIndex in
             emojis[pairIndex]
         }
     }
