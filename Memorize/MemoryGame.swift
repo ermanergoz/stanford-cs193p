@@ -8,7 +8,7 @@
 import Foundation
 // This is our model
 
-struct MemoryGame<CardContent> where CardContent: Equatable {
+struct MemoryGame<CardContent> where CardContent: Hashable {
     private(set) var cards: [Card]
 
     private var indexOfTheOneAndOnlyFaceUpCard: Int? {

@@ -13,7 +13,7 @@ struct EmojiMemoryGameView: View {
     var body: some View {
         AspectVGrid(items: game.cards, aspectRatio: 2 / 3) { card in
             if card.isMatched, !card.isFaceUp {
-                Rectangle().opacity(0)
+                Rectangle().opacity(0) //Placeholder for the matched card
             } else {
                 CardView(card: card)
                     .padding(4)
