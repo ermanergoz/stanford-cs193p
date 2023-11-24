@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StripeView<SymbolShape>: View where SymbolShape: Shape {
-    let numberOfStripes: Int = 8
+    let numberOfStripes: Int = 4
     let borderLineWidth: CGFloat = 1.3
 
     let shape: SymbolShape

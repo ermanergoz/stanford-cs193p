@@ -28,8 +28,8 @@ class SetViewModel: ObservableObject {
     }
 
     private static func createGame() -> SetModel<ShapeType, ShapeColor, ShapeShade, NumberOfShapes> {
-        SetModel<ShapeType, ShapeColor, ShapeShade, NumberOfShapes>(numberOfCards: Constants.numberOfCards) {
-            /*return*/ cardContents[$0]
+        SetModel<ShapeType, ShapeColor, ShapeShade, NumberOfShapes>(numberOfCards: Constants.initialNumberOfCards) {
+            /* return */ cardContents[$0]
         }
     }
 
@@ -39,7 +39,7 @@ class SetViewModel: ObservableObject {
         return model.cards
     }
 
-    func choose(card: Card) {
+    func chooseCard(card: Card) {
         model.choose(card: card)
     }
 
@@ -51,7 +51,7 @@ class SetViewModel: ObservableObject {
     func onDealThreeMoreCardsPressed() -> Bool {
         return model.dealThreeCards()
     }
-    
+
     func getScore() -> Int {
         return model.score
     }
@@ -90,8 +90,8 @@ class SetViewModel: ObservableObject {
         case two
         case three
     }
-    
+
     private enum Constants {
-        static let numberOfCards = 12
+        static let initialNumberOfCards = 12
     }
 }

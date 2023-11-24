@@ -7,111 +7,96 @@
 
 import Foundation
 
-struct SetModel<ShapeType, ShapeColor, ShapeShade, NumberOfShapes> where ShapeType: Equatable, ShapeColor: Equatable, ShapeShade: Equatable {
+struct SetModel<ShapeType, ShapeColor, ShapeShade, NumberOfShapes> where ShapeType: Hashable, ShapeColor: Hashable, ShapeShade: Hashable {
     private(set) var cards: [Card]
     private var numberOfCardsOnDeck = 0
     private var createContent: (Int) -> (Card.Content)
     private(set) var score = 0
-    
+
+    // Constants
+    private let maxDeckSize = 81
+    private let maxNumberOfChosenCards = 3
+
     init(numberOfCards: Int, createContent: @escaping (Int) -> (Card.Content)) {
         self.createContent = createContent
         numberOfCardsOnDeck = numberOfCards
         cards = []
-        
+
         for index in 0 ..< numberOfCards {
             let content = createContent(index)
-            cards.append(Card(content: content, id: index))
+            cards.append(Card(content: content))
         }
     }
-    
+
     mutating func choose(card: Card) {
         if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }) {
             cards[chosenIndex].isChosen.toggle()
         }
-        
         var chosenCards = cards.filter { $0.isChosen }
-        
-        if chosenCards.count == 3 {
+
+        if chosenCards.count == maxNumberOfChosenCards {
             if isSet(chosenCards: chosenCards) {
-                score+=1
+                score += 1
             }
             chosenCards = []
-            
-            for index in 0 ... cards.count - 1 {
+
+            for index in 0 ..< cards.count {
                 if cards[index].isChosen {
                     cards[index].isChosen = false
                 }
             }
         }
     }
-    
+
     mutating func dealThreeCards() -> Bool {
-        let limit = min(numberOfCardsOnDeck + 3, 81)
-        
+        let limit = min(numberOfCardsOnDeck + maxNumberOfChosenCards, maxDeckSize)
+
         for index in cards.count ..< limit {
             let content = createContent(index)
-            cards.append(Card(content: content, id: index+81))
+            cards.append(Card(content: content))
         }
-        
-        numberOfCardsOnDeck = cards.count
-        return numberOfCardsOnDeck < 81
+        numberOfCardsOnDeck = limit
+        return numberOfCardsOnDeck < maxDeckSize
     }
-        
-    mutating private func isSet(chosenCards: [Card]) -> Bool {
-        if isContentValid(chosenCards: chosenCards, keyPath: \.numberOfShapes, comparison: .allSame) ||
-                    isContentValid(chosenCards: chosenCards, keyPath: \.numberOfShapes, comparison: .allDifferent),
-                  isContentValid(chosenCards: chosenCards, keyPath: \.shape, comparison: .allSame) ||
-                    isContentValid(chosenCards: chosenCards, keyPath: \.shape, comparison: .allDifferent),
-                  isContentValid(chosenCards: chosenCards, keyPath: \.shade, comparison: .allSame) ||
-                    isContentValid(chosenCards: chosenCards, keyPath: \.shade, comparison: .allDifferent),
-                  isContentValid(chosenCards: chosenCards, keyPath: \.color, comparison: .allSame) ||
-                    isContentValid(chosenCards: chosenCards, keyPath: \.color, comparison: .allDifferent)
+
+    private mutating func isSet(chosenCards: [Card]) -> Bool {
+        if isCardPropertyValid(chosenCards: chosenCards, keyPath: \.color) &&
+            isCardPropertyValid(chosenCards: chosenCards, keyPath: \.numberOfShapes) &&
+            isCardPropertyValid(chosenCards: chosenCards, keyPath: \.shape) &&
+            isCardPropertyValid(chosenCards: chosenCards, keyPath: \.shade)
         {
-            cards = cards.filter({ item in !chosenCards.contains(where: { $0.id == item.id }) })
             let _ = dealThreeCards()
+            removeSet(chosenCards: chosenCards)
             return true
         }
         return false
     }
-    
-    private func isContentValid<T: Equatable>(chosenCards: [Card], keyPath: KeyPath<Card.Content, T>, comparison: ShapeComparison) -> Bool {
-        // Can't use generics https://developer.apple.com/forums/thread/12770
-        for currentCardIndex in 0 ..< chosenCards.count {
-            for nextCardIndex in (currentCardIndex + 1) ..< chosenCards.count {
-                let currentCard = chosenCards[currentCardIndex].content[keyPath: keyPath]
-                let nextCard = chosenCards[nextCardIndex].content[keyPath: keyPath]
-                
-                switch comparison {
-                case .allSame:
-                    if currentCard != nextCard {
-                        return false
-                    }
-                case .allDifferent:
-                    if currentCard == nextCard {
-                        return false
-                    }
-                }
+
+    private func isCardPropertyValid<ContentProperty: Hashable>(chosenCards: [Card], keyPath: KeyPath<Card.Content, ContentProperty>) -> Bool {
+        let values = Set(chosenCards.map { $0.content[keyPath: keyPath] })
+        // 1 if all same, 3 if all different
+        return values.count == 1 || values.count == 3
+    }
+
+    private mutating func removeSet(chosenCards: [Card]) {
+        chosenCards.forEach { chosenCard in
+            if let index = cards.firstIndex(where: { $0.id == chosenCard.id }) {
+                cards[index].isMatched = true
             }
         }
-        return true
     }
-    
+
     struct Card: Identifiable {
+        var id = UUID()
         var isMatched = false
         var isChosen: Bool = false
         var content: Content
-        var id: Int
-        
-        struct Content {
+
+        struct Content: Hashable {
             let shape: ShapeType
             let color: ShapeColor
             let shade: ShapeShade
             let numberOfShapes: Int
         }
-    }
-    
-    enum ShapeComparison {
-        case allSame
-        case allDifferent
     }
 }

@@ -13,16 +13,16 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Text("Score: \(viewModel.getScore())")
+            Text("\(ViewConstants.scoreText) \(viewModel.getScore())")
             AspectVGrid(items: viewModel.getCards, aspectRatio: ViewConstants.cardAspectRatio) { card in
                 if card.isMatched {
-                    Rectangle().opacity(0)
+                    Rectangle().opacity(ViewConstants.matchedCardOpacity)
                 } else {
                     CardView(card: card)
                         .foregroundStyle(card.content.color.getColor())
                         .padding(ViewConstants.cardPadding)
                         .onTapGesture {
-                            viewModel.choose(card: card)
+                            viewModel.chooseCard(card: card)
                         }
                 }
             }
@@ -30,22 +30,25 @@ struct ContentView: View {
                 Button {
                     viewModel.onNewGamePressed()
                 } label: {
-                    Text("New game")
+                    Text(ViewConstants.newGameButtonText)
                 }
                 Spacer()
                 Button {
                     isDeckFull = !viewModel.onDealThreeMoreCardsPressed()
                 } label: {
-                    Text("Deal 3 More Cards")
+                    Text(ViewConstants.threeMoreCardsButtonText)
                 }.disabled(isDeckFull)
             }.padding()
         }
     }
-    
+
     private enum ViewConstants {
         static let cardAspectRatio: CGFloat = 2 / 3
         static let cardPadding: CGFloat = 4
-        static let removedCardOpacity: CGFloat = 0
+        static let matchedCardOpacity: CGFloat = 0
+        static let newGameButtonText: String = "New game"
+        static let threeMoreCardsButtonText: String = "Deal 3 More Cards"
+        static let scoreText: String = "Score:"
     }
 }
 
@@ -55,14 +58,16 @@ struct CardView: View {
     var body: some View {
         GeometryReader { _ in
             ZStack {
-                let shape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
-                shape.fill().foregroundColor(.white)
-                shape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
+                let cardShape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
+                cardShape.fill().foregroundColor(.white)
+                let cardShapeBorder = cardShape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
 
                 if !card.isChosen, !card.isMatched {
                     renderCard(card: card)
+                    cardShapeBorder
                 } else if card.isChosen {
-                    renderCard(card: card).opacity(DrawingConstants.chosenCardOpacity).background(Color.gray)
+                    renderCard(card: card).opacity(DrawingConstants.chosenCardOpacity)
+                    cardShapeBorder.foregroundColor(.gray)
                 }
             }
         }
@@ -81,11 +86,11 @@ struct CardView: View {
     private func renderShape(content: SetViewModel.Card.Content) -> some View {
         switch content.shape {
         case .diamond:
-            renderShapeShade(shape: Diamond(), content: content)
+            renderShapeShade(shape: Diamond(), content: content).aspectRatio(DrawingConstants.symbolAspectRatio, contentMode: .fit)
         case .roundedRectangle:
-            renderShapeShade(shape: RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius), content: content)
+            renderShapeShade(shape: RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius), content: content).aspectRatio(DrawingConstants.symbolAspectRatio, contentMode: .fit)
         case .squiggle:
-            renderShapeShade(shape: Squiggle(), content: content)
+            renderShapeShade(shape: Squiggle(), content: content).aspectRatio(DrawingConstants.symbolAspectRatio, contentMode: .fit)
         }
     }
 
@@ -96,6 +101,7 @@ struct CardView: View {
             shape.fill()
         case .shaded:
             StripeView(shape: shape, color: content.color.getColor())
+
         case .stroked:
             shape.stroke()
         }
